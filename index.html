@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DialedIn — Aarush's Productivity RPG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-theme="night" data-font="default">
+
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+<div id="top-progress"><i id="top-progress-fill"></i></div>
+
+<div id="app">
+  <!-- ============ SIDEBAR ============ -->
+  <aside id="sidebar">
+    <div class="side-brand">
+      <span class="brand-icon">⚔️</span>
+      <span class="brand-name">DialedIn</span>
+      <button id="sidebar-collapse" class="icon-btn" title="Collapse sidebar (b)">◀</button>
+    </div>
+
+    <div class="side-profile" id="side-profile"></div>
+    <!-- Identity anchor lives here, not as a decorative top masthead — keeps the workspace header clear -->
+    <div id="identity-banner" title="Your Identity Anchor — click to edit"></div>
+
+    <nav id="side-nav">
+      <div class="nav-group-items">
+        <button class="nav-item active" data-view="dashboard"><i class="ico" data-ico="home"></i>Dashboard <kbd>1</kbd></button>
+        <button class="nav-item" data-view="tasks"><i class="ico" data-ico="check"></i>Tasks <kbd>2</kbd></button>
+        <button class="nav-item" data-view="timebox"><i class="ico" data-ico="calendar"></i>Timebox <kbd>3</kbd></button>
+      </div>
+
+      <div class="nav-group" data-group="progression">
+        <button class="nav-group-head"><i class="ico caret" data-ico="chevron"></i>Progression</button>
+        <div class="nav-group-items">
+          <button class="nav-item" data-view="quests"><i class="ico" data-ico="target"></i>Quests &amp; Badges <kbd>4</kbd></button>
+          <button class="nav-item" data-view="skills"><i class="ico" data-ico="activity"></i>Skills &amp; Bosses <kbd>5</kbd></button>
+          <button class="nav-item" data-view="shop"><i class="ico" data-ico="bag"></i>Shop &amp; Avatar <kbd>6</kbd></button>
+          <button class="nav-item" data-view="district"><i class="ico" data-ico="cube"></i>Focus District</button>
+        </div>
+      </div>
+      <div class="nav-group" data-group="insights">
+        <button class="nav-group-head"><i class="ico caret" data-ico="chevron"></i>Insights</button>
+        <div class="nav-group-items">
+          <button class="nav-item" data-view="analytics"><i class="ico" data-ico="bars"></i>Analytics <kbd>8</kbd></button>
+          <button class="nav-item" data-view="wellness"><i class="ico" data-ico="heart"></i>Wellness <kbd>9</kbd></button>
+        </div>
+      </div>
+      <div class="nav-group" data-group="tools">
+        <button class="nav-group-head collapsed"><i class="ico caret" data-ico="chevron"></i>Tools</button>
+        <div class="nav-group-items collapsed">
+          <button class="nav-item" data-view="excel"><i class="ico" data-ico="grid"></i>Spreadsheet</button>
+          <button class="nav-item" data-view="notes"><i class="ico" data-ico="file"></i>Notes <kbd>7</kbd></button>
+          <button class="nav-item" data-view="srs"><i class="ico" data-ico="star"></i>Spaced Repetition Flashcards</button>
+          <button class="nav-item" data-view="journal"><i class="ico" data-ico="book"></i>Journal</button>
+          <button class="nav-item" data-view="braindump"><i class="ico" data-ico="wind"></i>Brain Dump</button>
+          <button class="nav-item" data-view="automation"><i class="ico" data-ico="zap"></i>Automation</button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Spotify Focus Radio Widget -->
+    <div class="spotify-widget-container">
+      <div class="spotify-widget-header" id="spotify-toggle" title="Click to collapse focus music player">
+        <span class="spotify-logo">🎵</span> <b style="font-size:0.75rem; letter-spacing: 0.02em;">Focus Radio</b>
+        <span class="spacer"></span>
+        <span class="spotify-caret" id="spotify-caret-icon" style="font-size: 0.65rem;">▼</span>
+      </div>
+      <div class="spotify-widget-body" id="spotify-body">
+        <select id="spotify-playlist-select" class="field" style="padding: 4px; font-size: 0.7rem; margin-bottom: 6px; background: #141724; border: 1px solid var(--line); color: var(--text); height: auto; width: 100%;">
+          <option value="https://open.spotify.com/embed/playlist/37i9dQZF1DX8UebhpvM97p">☕ Lofi Study Beats</option>
+          <option value="https://open.spotify.com/embed/playlist/37i9dQZF1DX5c9XUTr6idv">🌌 Synthwave Space Chill</option>
+          <option value="https://open.spotify.com/embed/playlist/37i9dQZF1DX917v6AxvC7I">🎹 Deep Focus Piano</option>
+          <option value="https://open.spotify.com/embed/playlist/37i9dQZF1DX8a1vK8uK691">🌧️ Rainy Cafe Ambience</option>
+          <option value="custom">✍️ Custom URL...</option>
+        </select>
+        <div id="spotify-custom-url-group" style="display: none; margin-bottom: 6px; gap: 4px;">
+          <input type="text" id="spotify-custom-input" placeholder="Paste Spotify Playlist URL..." style="flex: 1; padding: 4px; font-size: 0.7rem; background: #141724; border: 1px solid var(--line); color: var(--text); border-radius: var(--radius-sm);">
+          <button class="btn sm primary" id="spotify-custom-load-btn" style="padding: 2px 6px; font-size: 0.68rem; flex-shrink: 0;">Load</button>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; background: rgba(255,255,255,0.01); padding: 2px 6px; border-radius:var(--radius-sm); border:1px solid rgba(255,255,255,0.02);">
+          <span style="font-size:0.65rem; color:var(--muted); font-weight:600;">Player View:</span>
+          <div style="display:flex; gap:3px;" id="spotify-size-container">
+            <button class="btn sm" id="btn-spotify-compact" style="padding: 1px 4px; font-size:0.6rem; height:18px; line-height:1; min-width:auto;" title="Compact Player">Compact</button>
+            <button class="btn sm primary" id="btn-spotify-mid" style="padding: 1px 4px; font-size:0.6rem; height:18px; line-height:1; min-width:auto;" title="Medium Player (Default)">Standard</button>
+            <button class="btn sm" id="btn-spotify-large" style="padding: 1px 4px; font-size:0.6rem; height:18px; line-height:1; min-width:auto;" title="Large Playlist View">Tracks</button>
+          </div>
+        </div>
+        <div class="spotify-iframe-container" id="spotify-iframe-holder" style="transition: height 0.2s ease;">
+          <iframe id="spotify-player-iframe" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX8UebhpvM97p?utm_source=generator&theme=0" width="100%" height="152" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-foot">
+      <div id="side-timer" title="Click to open Focus Session">
+        <span id="side-timer-dot"></span><span id="side-timer-time">--:--</span><span id="side-timer-label" class="muted">ready</span>
+      </div>
+      <button class="nav-item" data-view="settings"><i class="ico" data-ico="settings"></i>Settings</button>
+      <button id="zen-btn" class="btn ghost" title="Minimal Mode (z) — hides everything but timer, tasks & analytics"><i class="ico" data-ico="moon"></i>Zen Mode</button>
+      <button id="shortcut-btn" class="btn ghost" title="Keyboard shortcuts (?)"><i class="ico" data-ico="keyboard"></i>Shortcuts</button>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div id="main-wrap">
+    <header id="topbar">
+      <div id="greeting"></div>
+      <div id="top-chips">
+        <div class="chip" id="chip-level" title="Your level"></div>
+        <div class="chip xp-chip" title="XP progress to next level">
+          <div id="xp-bar"><div id="xp-fill"></div></div>
+          <span id="xp-label"></span>
+        </div>
+        <div class="chip" id="chip-coins" title="Coins — spend in Shop"></div>
+        <div class="chip" id="chip-streak" title="Daily streak"></div>
+        <div class="chip" id="chip-multiplier" title="Streak XP multiplier"></div>
+      </div>
+      <div class="top-actions">
+        <button id="cmd-palette-btn" class="icon-btn" title="Search everything (Ctrl/Cmd+K)"><i class="ico" data-ico="search"></i></button>
+        <button id="scratch-toggle" class="icon-btn" title="Scratchpad (s)"><i class="ico" data-ico="scratch"></i></button>
+        <button id="tour-btn" class="icon-btn" title="Guided tour"><i class="ico" data-ico="compass"></i></button>
+        <button id="media-guard-btn" class="icon-btn" title="About to watch/play something?"><i class="ico" data-ico="gamepad"></i></button>
+        <button id="sound-toggle" class="icon-btn" title="Toggle sound FX"><i class="ico" data-ico="volume"></i></button>
+        <button id="theme-cycle" class="icon-btn" title="Cycle theme"><i class="ico" data-ico="palette"></i></button>
+      </div>
+    </header>
+
+    <main id="views">
+      <section class="view active" id="view-dashboard"></section>
+      <section class="view" id="view-excel"></section>
+      <section class="view" id="view-district"></section>
+      <section class="view" id="view-tasks"></section>
+      <section class="view" id="view-timebox"></section>
+      <section class="view" id="view-quests"></section>
+      <section class="view" id="view-skills"></section>
+      <section class="view" id="view-shop"></section>
+      <section class="view" id="view-notes"></section>
+      <section class="view" id="view-journal"></section>
+      <section class="view" id="view-braindump"></section>
+      <section class="view" id="view-analytics"></section>
+      <section class="view" id="view-wellness"></section>
+      <section class="view" id="view-automation"></section>
+      <section class="view" id="view-srs"></section>
+      <section class="view" id="view-settings"></section>
+    </main>
+  </div>
+</div>
+
+<!-- Global quick-add bar — pops up on "n", lives at the bottom edge instead of inline on the dashboard -->
+<div id="quick-bar" class="hidden">
+  <i class="ico" data-ico="check"></i>
+  <input type="text" id="quick-bar-input" placeholder='Quick add: "Read 10 pages /today #reading @reading"'>
+  <kbd>enter</kbd><kbd>esc</kbd>
+</div>
+
+<!-- Floating scratchpad -->
+<div id="scratchpad" class="hidden">
+  <div class="scratch-head">🗒️ Scratchpad <button class="icon-btn" id="scratch-close">✕</button></div>
+  <textarea id="scratch-text" placeholder="Sticky note that follows you everywhere…"></textarea>
+</div>
+
+<!-- Zen mode overlay -->
+<div id="zen-overlay" class="hidden">
+  <button id="zen-exit" class="icon-btn" title="Exit Focus Session (Esc)">✕</button>
+  <div id="zen-task"></div>
+  <div id="zen-timer"></div>
+  <div id="zen-controls"></div>
+  <div id="zen-picker" class="hidden"></div>
+</div>
+
+<!-- Congrats overlay -->
+<div id="congrats-overlay" class="hidden">
+  <canvas id="confetti-canvas"></canvas>
+  <div class="congrats-card">
+    <div class="congrats-emoji" id="congrats-emoji">🎉</div>
+    <h1 id="congrats-title"></h1>
+    <p id="congrats-msg"></p>
+    <button class="btn primary" id="congrats-close">Let's go!</button>
+  </div>
+</div>
+
+<!-- Time-out lockout -->
+<div id="lockout-overlay" class="hidden">
+  <div class="lockout-card">
+    <h1 id="lockout-title">⏳ Time Out</h1>
+    <p id="lockout-msg">You failed a session. The app is locked so you can reset your mind.</p>
+    <div id="lockout-timer">15:00</div>
+    <p class="muted" id="lockout-hint">Stand up. Breathe. Drink water. Come back stronger.</p>
+  </div>
+</div>
+
+<div id="toasts"></div>
+<div id="modal-root"></div>
+<style id="custom-css-inject"></style>
+
+<script src="js/store.js"></script>
+<script src="js/undo.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/categorize.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/game.js"></script>
+<script src="js/tasks.js"></script>
+<script src="js/timer.js"></script>
+<script src="js/psych.js"></script>
+<script src="js/analytics.js"></script>
+<script src="js/notecard-renderer.js"></script>
+<script src="js/district.js"></script>
+<script src="js/excel.js"></script>
+<script src="js/notes.js"></script>
+<script src="js/wellness.js"></script>
+<script src="js/srs.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

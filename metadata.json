@@ -1,0 +1,8 @@
+{
+  "name": "DialedIn",
+  "description": "Aarush's Productivity RPG — gamified task manager, focus timer, notes, and wellness habits.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
